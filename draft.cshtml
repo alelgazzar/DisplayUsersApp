@@ -1,0 +1,90 @@
+@section Scripts {
+
+    <script>
+        $(document).ready(function () {
+            $("input").on("input", function () {
+                const input = $(this);
+                const errorMessage = input.siblings(".validation-message");
+                const checkmark = $("#" + input.attr("id") + "Check");
+
+                if (input.val().trim() !== "") {
+                    errorMessage.hide();  // Hide the validation message
+                    checkmark.show();  // Show the checkmark
+                } else {
+                    errorMessage.show();  // Show the validation message
+                    checkmark.hide();  // Hide the checkmark
+                }
+            });
+        });
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#Email').on('input', function () {
+                var email = $(this).val().trim();
+
+                // Use validator.js to validate email
+                if (validator.isEmail(email)) {
+                    $('#EmailCheck').show();  // Show green checkmark
+                    $('#emailFormatError').hide();  // Hide error message
+                } else {
+                    $('#EmailCheck').hide();  // Hide checkmark
+                    $('#emailFormatError').text('Please enter a valid email address.').show();  // Show error
+                }
+
+                // Additional logic for checking if email exists (asynchronous request)
+                if (validator.isEmail(email)) {
+                    $.ajax({
+                        url: '/api/users/check-email?email=' + encodeURIComponent(email),
+                        method: 'GET',
+                        success: function (response) {
+                            if (response.exists) {
+                                $('#emailFormatError').text('This email already exists.').show();
+                                $('#EmailCheck').hide();
+                                $('#submitButton').prop('disabled', true);  // Disable submit button if email exists
+                            } else {
+                                $('#EmailCheck').show();
+                                $('#emailFormatError').hide();
+                                validateForm();  // Revalidate form
+                            }
+                        },
+                        error: function () {
+                            $('#emailFormatError').text('Error checking email.').show();
+                            $('#submitButton').prop('disabled', true);  // Disable button if error
+                        }
+                    });
+
+                }
+            });
+        });
+    </script>
+
+    <script>
+
+        $(document).ready(function () {
+            // Check validity for each input field and enable/disable the submit button
+            function validateForm() {
+                const isValidFirstName = $('#FirstName').val().trim() !== '';
+                const isValidLastName = $('#LastName').val().trim() !== '';
+                const isValidEmail = $('#Email')[0].validity.valid && $('#emailFormatError').is(':hidden');
+
+                // Enable the submit button if all fields are valid
+                if (isValidFirstName && isValidLastName && isValidEmail) {
+                    $('#submitButton').prop('disabled', false);
+                } else {
+                    $('#submitButton').prop('disabled', true);
+                }
+            }
+
+            // Call validateForm on input events
+            $('#FirstName, #LastName, #Email').on('input', function () {
+                validateForm();
+            });
+
+            // Initial validation check
+            validateForm();
+        });
+
+
+    </script>

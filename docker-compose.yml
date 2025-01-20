@@ -1,0 +1,16 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:latest
+    container_name: MYSQL_DB
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=my_db
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin
+      - MYSQL_ROOT_HOST=% 
+      - MYSQL_TCP_PORT=3306
+      - TZ=Africa/Cairo
+    network_mode: "host" 
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]

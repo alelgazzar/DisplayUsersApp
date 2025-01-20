@@ -1,0 +1,130 @@
+﻿@page
+@model DisplayUsersApp.Pages.UsersModel
+
+<h2>Users</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.UserList)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.FirstName</td>
+                <td>@user.LastName</td>
+                <td>@user.Email</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Add a New User</h3>
+<form method="post">
+    <div class="form-group">
+        <label asp-for="NewUser.FirstName"></label>
+        <input type="text" asp-for="NewUser.FirstName" id="FirstName" class="form-control" />
+        <span asp-validation-for="NewUser.FirstName" class="text-danger"></span>
+        <span id="firstNameCheck" class="text-success" style="display: none;">🗸</span>
+    </div>
+    <div class="form-group">
+        <label asp-for="NewUser.LastName"></label>
+        <input type="text" asp-for="NewUser.LastName" id="LastName" class="form-control" />
+        <span asp-validation-for="NewUser.LastName" class="text-danger"></span>
+        <span id="lastNameCheck" class="text-success" style="display: none;">🗸</span>
+    </div>
+    <div class="form-group">
+        <label asp-for="NewUser.Email"></label>
+        <input type="email" asp-for="NewUser.Email" id="Email" class="form-control" />
+        <span asp-validation-for="NewUser.Email" class="text-danger"></span>
+        <span id="emailTakenError" class="text-danger" style="display: none;">This email is already in use.</span>
+        <span id="emailCheck" class="text-success" style="display: none;">🗸</span>
+    </div>
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <button type="submit" class="btn btn-primary" id="submitButton" disabled>Add User</button>
+</form>
+
+
+@* @section scripts {
+   
+    <script>
+        $(document).ready(function () {
+            function validatefield(inputid, checkmarkid) {
+                let inputelement = $(inputid);
+                let inputvalue = inputelement.val().trim();
+              
+
+                if (inputvalue === '' || null) {
+                    inputelement.siblings('span.text-danger').show();
+                    $(checkmarkid).hide();
+                } else {
+                    inputelement.siblings('span.text-danger').hide();
+                    $(checkmarkid).show();
+                }
+                togglesubmitbutton();
+            }
+
+            $('#firstname').on('input', function () {
+                validatefield('#firstname', '#firstnamecheck');
+            });
+
+            $('#lastname').on('input', function () {
+                validatefield('#lastname', '#lastnamecheck');
+            });
+
+            function togglesubmitbutton() {
+                let isfirstnamevalid = $('#firstname').val().trim() !== '';
+                let islastnamevalid = $('#lastname').val().trim() !== '';
+                $('#submitbutton').prop('disabled', !(isfirstnamevalid && islastnamevalid));
+            }
+        });
+    </script>
+} *@
+
+  
+<script>
+    $(document).ready(function () {
+        // attach the keyup event to the email input
+        $('#email').on('keyup', function () {
+            var email = $(this).val();
+
+            if (email.length > 0) {
+                // send an ajax request to check if the email already exists
+                $.ajax({
+                    url: 'check-email', // the server-side endpoint to check email
+                    type: 'get', // http method
+                    data: { email: email }, // data to be sent to the server
+                    datatype: 'json', // expected data type of the response
+                    success: function (response) {
+                        console.log(response);
+                        if (response.isemailtaken) {
+                            $('#emailTakenError').show();
+                            $('#emailCheck').hide();
+                            $('#submitButton').prop('disabled', true); // disable submit button
+                        } else {
+                            $('#emailTakenError').hide();
+                            $('#emailCheck').show();
+                            $('#submitButton').prop('disabled', false); // enable submit button
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('error checking email:', error); // handle any error response
+                    }
+                });
+            } else {
+                $('#emailTakenError').hide();
+                $('#emailCheck').hide();
+                $('#submitButton').prop('disabled', true); // disable submit button if email is empty
+            }
+        });
+    });
+</script>
+
+
