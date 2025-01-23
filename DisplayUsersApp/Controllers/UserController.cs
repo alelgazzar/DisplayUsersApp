@@ -19,18 +19,7 @@ namespace DisplayUsersApp.Controllers
             _context = context;
         }
 
-        [HttpGet("check-email")]
-        public async Task<IActionResult> CheckEmail(string email)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-
-            if (user != null)
-            {
-                return Ok(new { exists = true });
-            }
-
-            return Ok(new { exists = false });
-        }
+        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
